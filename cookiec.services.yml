@@ -1,0 +1,5 @@
+services:
+  popup_message_event_subscriber:
+    class: Drupal\cookiec\EventSubscriber\CookiecSubscriber
+    tags:
+      - {name: event_subscriber}
