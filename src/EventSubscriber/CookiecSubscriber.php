@@ -3,7 +3,6 @@
 namespace Drupal\cookiec\EventSubscriber;
 
 use Drupal\Core\Config\ConfigFactoryInterface;
-use Drupal\Core\Language\LanguageManager;
 use Drupal\Core\Language\LanguageManagerInterface;
 use Drupal\Core\Render\AttachmentsInterface;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
@@ -44,7 +43,7 @@ class CookiecSubscriber implements EventSubscriberInterface {
    */
   public function __construct(ConfigFactoryInterface $config, LanguageManagerInterface $languageManager) {
     $this->config = $config->get('cookiec.settings');
-    $this->languageManager = $languageManager->getDefaultLanguage();
+    $this->languageManager = $languageManager;
   }
 
   /**
@@ -60,7 +59,7 @@ class CookiecSubscriber implements EventSubscriberInterface {
     }
     // Check module has enable popup
     $config = $this->config;
-    $language = $this->languageManager->getId();
+    $language = $this->languageManager->getCurrentLanguage()->getId();
 
     $variables =  array(
       'message' => $config->get($language."_popup_info"),

@@ -36,7 +36,7 @@ class CookiecSettingsForm extends ConfigFormBase {
 
     $form['config'] = array(
       '#type' => 'details',
-      '#title' => t('General Config'),
+      '#title' => $this->t('General Config'),
     );
 
     $form['popup_enabled'] = array(
@@ -86,8 +86,8 @@ class CookiecSettingsForm extends ConfigFormBase {
       '#type' => 'select',
       '#group' => 'config',
       '#options' => array(
-        TRUE => t('Top'),
-        NULL => t('Bottom'),
+        TRUE => $this->t('Top'),
+        NULL => $this->t('Bottom'),
       ),
       '#title' => $this->t('popup_position'),
       '#default_value' => $config->get('popup_position'),
