@@ -1,11 +1,12 @@
 <?php
 
-/**
- * @file Drupal\coociec\EventSubscriber\PopupMessageSubscriber
- */
 namespace Drupal\cookiec\EventSubscriber;
 
+use Drupal\Core\Config\ConfigFactoryInterface;
+use Drupal\Core\Language\LanguageManager;
+use Drupal\Core\Language\LanguageManagerInterface;
 use Drupal\Core\Render\AttachmentsInterface;
+use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Symfony\Component\HttpKernel\Event\FilterResponseEvent;
 use Symfony\Component\HttpKernel\KernelEvents;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
@@ -13,26 +14,44 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 /**
  * Class PopupMessageSubscriber
+ *
  * @package Drupal\popup_message\EventSubscriber
  */
 class CookiecSubscriber implements EventSubscriberInterface {
 
+  use StringTranslationTrait;
+
   /**
+   * The cookiec config.
+   *
    * @var \Drupal\Core\Config\ImmutableConfig
    */
   protected $config;
 
   /**
-   * PopupMessageSubscriber constructor.
+   * The language manager.
+   *
+   * @var \Drupal\Core\Language\LanguageManagerInterface
    */
-  public function __construct() {
-    $this->config = \Drupal::configFactory()->get('cookiec.settings');
+  protected $languageManager;
+
+
+  /**
+   * CookiecSubscriber constructor.
+   *
+   * @param \Drupal\Core\Config\ConfigFactoryInterface $config
+   * @param \Drupal\Core\Language\LanguageManagerInterface $languageManager
+   */
+  public function __construct(ConfigFactoryInterface $config, LanguageManagerInterface $languageManager) {
+    $this->config = $config->get('cookiec.settings');
+    $this->languageManager = $languageManager->getDefaultLanguage();
   }
 
   /**
    * @param \Symfony\Component\HttpKernel\Event\FilterResponseEvent $event
    */
   public function showPopupMessage(FilterResponseEvent $event) {
+
     // Check permissions to display message.
     $response = $event->getResponse();
 
@@ -41,7 +60,7 @@ class CookiecSubscriber implements EventSubscriberInterface {
     }
     // Check module has enable popup
     $config = $this->config;
-    $language = \Drupal::languageManager()->getCurrentLanguage()->getId();
+    $language = $this->languageManager->getId();
 
     $variables =  array(
       'message' => $config->get($language."_popup_info"),
@@ -60,8 +79,6 @@ class CookiecSubscriber implements EventSubscriberInterface {
     $twig = \Drupal::service('twig');
     $template = $twig->loadTemplate(drupal_get_path('module', 'cookiec') . '/templates/cookiec_agreed.html.twig');
     $html_agreed = $template->render($variables);
-
-
 
     $variables = array(
       'popup_enabled' => $config->get('popup_enabled'),
