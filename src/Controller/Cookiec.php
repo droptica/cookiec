@@ -3,6 +3,8 @@
 namespace Drupal\cookiec\Controller;
 
 use Drupal\Core\Controller\ControllerBase;
+use Drupal\Core\Language\LanguageManagerInterface;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Class Cookiec
@@ -19,12 +21,24 @@ class Cookiec extends ControllerBase {
   protected $languageManager;
 
   /**
-   * WeatherStation constructor.
+   * Cookiec constructor.
+   *
+   * @param \Drupal\Core\Language\LanguageManagerInterface $languageManager
    */
   public function __construct(LanguageManagerInterface $languageManager) {
     $this->config = $this->config('cookiec.settings');
     $this->languageManager = $languageManager;
   }
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function create(ContainerInterface $container) {
+    return new static(
+      $container->get('language_manager')
+    );
+  }
+
 
   /**
    * Render
